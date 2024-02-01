@@ -27,11 +27,11 @@ RUN python -m pip install --use-deprecated=legacy-resolver -r requirements.txt \
 
 # Conditional TTS setup
 RUN if [ "${INCLUDE_TTS}" = "true" ]; then \
-        python -m unidic download && \
-        mkdir -p /app/tts_models && \
-        # Additional TTS setup steps here \
-    ; fi
-
+        python -m unidic download; \
+        mkdir -p /app/tts_models; \
+        # Additional TTS setup steps here (remove this line if no additional steps are required)
+    fi
+	
 # Copy the start_all_services.sh script into the container
 COPY start_all_services.sh /app
 # Make sure the script is executable
@@ -43,10 +43,7 @@ COPY main.py .
 ENV NVIDIA_DISABLE_REQUIRE=0
 ENV NUM_THREADS=2
 
-# Expose port 80 only if TTS is included
-RUN if [ "${INCLUDE_TTS}" = "true" ]; then \
-        EXPOSE 80 \
-    ; fi
+EXPOSE 80
 
 # Conditional CMD to run the TTS server in the background
 # and pipe its stdout and stderr to a log file
@@ -60,6 +57,7 @@ RUN if [ "${INCLUDE_TTS}" = "true" ]; then \
 
 RUN if [ "${SERVICE_OPTION}" = "koboldcpp" ]; then \
         curl -fLo /usr/bin/koboldcpp https://koboldai.org/cpplinux && chmod +x /usr/bin/koboldcpp && \
+		mkdir -p /models && \
         wget -q -O /models/dolphin-2_6-phi-2.Q2_K.gguf https://huggingface.co/TheBloke/dolphin-2_6-phi-2-GGUF/resolve/main/dolphin-2_6-phi-2.Q2_K.gguf?download=true \
     ; fi
 
@@ -68,7 +66,7 @@ WORKDIR /whispercpp
 # Installation of whispercpp and downloading the specified model
 RUN git clone https://github.com/ggerganov/whisper.cpp.git && \
     cd whisper.cpp && \
-    make && \
+    make -j && \
     bash ./models/download-ggml-model.sh ${WHISPERCPP_MODEL}
 
 # Replace the final CMD with the new entry point script
