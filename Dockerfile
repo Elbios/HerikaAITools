@@ -8,6 +8,9 @@ ARG INCLUDE_TTS=false
 ARG SERVICE_OPTION=koboldcpp
 # New ARG for whispercpp model option
 ARG WHISPERCPP_MODEL=base.en
+ENV WHISPERCPP_MODEL_FILENAME=ggml-base.en.bin
+
+RUN useradd -m ubuntu
 
 # Common dependencies
 RUN apt-get update && \
@@ -16,7 +19,12 @@ RUN apt-get update && \
 
 
 # Set work directory for XTTS
-WORKDIR /app
+WORKDIR /xtts_app
+
+# Copy main script for TTS
+COPY main.py .
+# Copy requirements for Python packages for TTS
+COPY requirements.txt .
 
 # Install Python packages
 RUN python -m pip install --use-deprecated=legacy-resolver -r requirements.txt \
@@ -25,23 +33,17 @@ RUN python -m pip install --use-deprecated=legacy-resolver -r requirements.txt \
 # Conditional TTS setup
 RUN if [ "${INCLUDE_TTS}" = "true" ]; then \
         python -m unidic download; \
-        mkdir -p /app/tts_models; \
+        mkdir -p /xtts_app/tts_models; \
         # Additional TTS setup steps here (remove this line if no additional steps are required)
     fi
 	
-# Copy the start_all_services.sh script into the container
-COPY start_all_services.sh /app
-# Make sure the script is executable
-RUN chmod +x /app/start_all_services.sh
-# Copy main script for TTS
-COPY main.py .
-# Copy requirements for Python packages for TTS
-COPY requirements.txt .
+
 
 
 # Environment variables for TTS
 ENV NVIDIA_DISABLE_REQUIRE=0
 ENV NUM_THREADS=2
+ENV COQUI_TOS_AGREED=1
 # XTTS exported on port 80 within Docker
 EXPOSE 80
 
@@ -59,7 +61,12 @@ RUN git clone https://github.com/ggerganov/whisper.cpp.git && \
     make -j && \
     bash ./models/download-ggml-model.sh ${WHISPERCPP_MODEL}
 
-WORKDIR /app
+WORKDIR /home/ubuntu
+
+## Copy the start_all_services.sh script into the container
+#COPY start_all_services.sh /app
+## Make sure the script is executable
+#RUN chmod +x /app/start_all_services.sh
 
 # Replace the final CMD with the new entry point script
-CMD ["/app/start_all_services.sh"]
+CMD ["bash start_all_services.sh"]
