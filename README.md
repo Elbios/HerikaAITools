@@ -29,7 +29,7 @@ Build Docker container:
 
 Run Docker container:
 
- `docker run --gpus all -d -e INCLUDE_TTS=true -v $(pwd):/home/ubuntu --name herikadocker herikadocker`
+ `docker run --gpus all -d -e INCLUDE_TTS=true -p 5001:5001 -p 8070:8070 -p 80:80 -v $(pwd):/home/ubuntu --name herikadocker herikadocker`
 
  (if on Windows, replace $(pwd) with your current directory where the Dockerfile is)
 
@@ -42,7 +42,7 @@ Run Docker container:
 
  `docker rm -f herikadocker`
 
- `docker run --gpus all -d -e INCLUDE_TTS=true -v $(pwd):/home/ubuntu --name herikadocker herikadocker`
+ `docker run --gpus all -d -e INCLUDE_TTS=true -p 5001:5001 -p 8070:8070 -p 80:80 -v $(pwd):/home/ubuntu --name herikadocker herikadocker`
  
 That's all!
 
