@@ -5,11 +5,15 @@ FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-devel
 ARG DEBIAN_FRONTEND=noninteractive
 # Argument to control the inclusion of TTS
 ARG INCLUDE_TTS=false
+ARG SERVICE_OPTION=koboldcpp
+# New ARG for whispercpp model option
+ARG WHISPERCPP_MODEL=base.en
 
 # Common dependencies
 RUN apt-get update && \
     apt-get install --no-install-recommends -y sox libsox-fmt-all curl wget gcc git git-lfs build-essential libaio-dev libsndfile1 ssh ffmpeg && \
     apt-get clean && apt-get -y autoremove
+
 
 # Set work directory
 WORKDIR /app
@@ -28,6 +32,10 @@ RUN if [ "${INCLUDE_TTS}" = "true" ]; then \
         # Additional TTS setup steps here \
     ; fi
 
+# Copy the start_all_services.sh script into the container
+COPY start_all_services.sh /app
+# Make sure the script is executable
+RUN chmod +x /app/start_all_services.sh
 # Copy main script for TTS
 COPY main.py .
 
@@ -42,13 +50,26 @@ RUN if [ "${INCLUDE_TTS}" = "true" ]; then \
 
 # Conditional CMD to run the TTS server in the background
 # and pipe its stdout and stderr to a log file
-CMD if [ "${INCLUDE_TTS}" = "true" ]; then \
-        (uvicorn main:app --host 0.0.0.0 --port 80 > tts_log.txt 2>&1 &) \
-    ; fi
+#CMD if [ "${INCLUDE_TTS}" = "true" ]; then \
+#        (uvicorn main:app --host 0.0.0.0 --port 80 > tts_log.txt 2>&1 &) \
+#    ; fi
 
 # Here you can add the setup for other AI tools and services
 # For example:
 # RUN python -m pip install some-other-ai-tool
 
-# The final CMD should start all necessary services, including those conditionally started above
-CMD ["bash", "start_all_services.sh"]
+RUN if [ "${SERVICE_OPTION}" = "koboldcpp" ]; then \
+        curl -fLo /usr/bin/koboldcpp https://koboldai.org/cpplinux && chmod +x /usr/bin/koboldcpp && \
+        wget -q -O /models/dolphin-2_6-phi-2.Q2_K.gguf https://huggingface.co/TheBloke/dolphin-2_6-phi-2-GGUF/resolve/main/dolphin-2_6-phi-2.Q2_K.gguf?download=true \
+    ; fi
+
+WORKDIR /whispercpp
+
+# Installation of whispercpp and downloading the specified model
+RUN git clone https://github.com/ggerganov/whisper.cpp.git && \
+    cd whisper.cpp && \
+    make && \
+    bash ./models/download-ggml-model.sh ${WHISPERCPP_MODEL}
+
+# Replace the final CMD with the new entry point script
+CMD ["/app/start_all_services.sh"]
