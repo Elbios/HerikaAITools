@@ -21,6 +21,8 @@ sudo apt-get install -y nvidia-container-toolkit
 sudo nohup dockerd > docker.log 2>&1 &
 ```
 
+(last line not necessary when you have systemd)
+
 Build Docker container:
 
 `docker build . --build-arg INCLUDE_TTS=true -t herikadocker`
@@ -33,9 +35,13 @@ Run Docker container:
 
  If you make any changes to Dockerfile:
  Rebuild:
+
  `docker build . --build-arg INCLUDE_TTS=true -t herikadocker`
+
  Rerun:
+
  `docker rm -f herikadocker`
+
  `docker run --gpus all -d -e INCLUDE_TTS=true -v $(pwd):/home/ubuntu --name herikadocker herikadocker`
  
 That's all!
