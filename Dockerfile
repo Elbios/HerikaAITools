@@ -5,6 +5,7 @@ FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-devel
 ARG DEBIAN_FRONTEND=noninteractive
 # Argument to control the inclusion of TTS
 ARG INCLUDE_TTS=false
+# Use SERVICE_OPTION=none to disable
 ARG SERVICE_OPTION=koboldcpp
 # New ARG for whispercpp model option
 ARG WHISPERCPP_MODEL=base.en
