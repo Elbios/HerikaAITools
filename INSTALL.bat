@@ -59,6 +59,13 @@ if NOT %ERRORLEVEL% == 0 (
     exit /b %ERRORLEVEL%
 )
 
+echo Cloning HerikaAITools repository...
+wsl -d DwemerAI4Skyrim2 -e cd /home/dwemer && git clone https://github.com/Elbios/HerikaAITools.git
+if NOT %ERRORLEVEL% == 0 (
+    echo ERROR: Failed to clone repository. Please check the log above for details.
+    exit /b %ERRORLEVEL%
+)
+
 echo Installation completed successfully!
 endlocal
 pause
