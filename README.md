@@ -24,6 +24,10 @@ sudo nohup dockerd > docker.log 2>&1 &
 (last line not necessary when you have systemd)
 
 ----------------------------------------------------------------------------------------------------------
+Clone this repository:
+
+`git clone https://github.com/Elbios/HerikaAITools.git && cd HerikaAITools`
+
 Build Docker container:
 
 `docker build . --build-arg INCLUDE_TTS=true -t herikadocker`

@@ -10,6 +10,14 @@ ARG SERVICE_OPTION=koboldcpp
 # New ARG for whispercpp model option
 ARG WHISPERCPP_MODEL=base.en
 ENV WHISPERCPP_MODEL_FILENAME=ggml-base.en.bin
+# Filename of LLM, like: dolphin-2_6-phi-2.Q2_K.gguf (fill in both)
+#ARG LLM_FILENAME=dolphin-2_6-phi-2.Q2_K.gguf
+#ENV LLM_FILENAME=dolphin-2_6-phi-2.Q2_K.gguf
+ARG LLM_FILENAME=toppy-m-7b.Q4_K_S.gguf
+ENV LLM_FILENAME=toppy-m-7b.Q4_K_S.gguf
+# Huggingface link to LLM, like: https://huggingface.co/TheBloke/dolphin-2_6-phi-2-GGUF/resolve/main/dolphin-2_6-phi-2.Q2_K.gguf?download=true
+#ARG LLM_DOWNLOAD_LINK=https://huggingface.co/TheBloke/dolphin-2_6-phi-2-GGUF/resolve/main/dolphin-2_6-phi-2.Q2_K.gguf?download=true
+ARG LLM_DOWNLOAD_LINK=https://huggingface.co/TheBloke/Toppy-M-7B-GGUF/resolve/main/toppy-m-7b.Q4_K_S.gguf?download=true
 
 RUN useradd -m ubuntu
 
@@ -51,7 +59,7 @@ EXPOSE 80
 RUN if [ "${SERVICE_OPTION}" = "koboldcpp" ]; then \
         curl -fLo /usr/bin/koboldcpp https://koboldai.org/cpplinux && chmod +x /usr/bin/koboldcpp && \
 		mkdir -p /models && \
-        wget -q -O /models/dolphin-2_6-phi-2.Q2_K.gguf https://huggingface.co/TheBloke/dolphin-2_6-phi-2-GGUF/resolve/main/dolphin-2_6-phi-2.Q2_K.gguf?download=true \
+        wget -q -O /models/${LLM_FILENAME} ${LLM_DOWNLOAD_LINK} \
     ; fi
 
 WORKDIR /whispercpp
@@ -70,4 +78,5 @@ WORKDIR /home/ubuntu
 #RUN chmod +x /app/start_all_services.sh
 
 # Replace the final CMD with the new entry point script
-CMD ["bash start_all_services.sh"]
+#CMD ["bash start_all_services.sh"]
+CMD ["bash", "start_all_services.sh"]
