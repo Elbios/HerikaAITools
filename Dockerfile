@@ -7,6 +7,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG INCLUDE_TTS=false
 # Use SERVICE_OPTION=none to disable
 ARG SERVICE_OPTION=koboldcpp
+# Use VISION_MODEL=none to disable
+ARG VISION_MODEL=none
 # New ARG for whispercpp model option
 ARG WHISPERCPP_MODEL=base.en
 ENV WHISPERCPP_MODEL_FILENAME=ggml-base.en.bin
@@ -69,6 +71,15 @@ RUN git clone https://github.com/ggerganov/whisper.cpp.git && \
     cd whisper.cpp && \
     make -j && \
     bash ./models/download-ggml-model.sh ${WHISPERCPP_MODEL}
+
+WORKDIR /qwen
+COPY qwen_requirements.txt .
+
+# Install dependencies for Qwen vision model (for Herika Soulgaze) if selected
+RUN if [ "${VISION_MODEL}" = "qwen" ]; then \
+        pip install -r qwen_requirements.txt \
+        pip install flask optimum gekko auto-gptq tiktoken transformers_stream_generator accelerate einops olefile \
+    ; fi
 
 WORKDIR /home/ubuntu
 

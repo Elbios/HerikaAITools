@@ -11,7 +11,7 @@ if NOT %ERRORLEVEL% == 0 (
 timeout /t 5 /nobreak > NUL
 
 echo HERIKA: Building Docker image...
-wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker build . --build-arg INCLUDE_TTS=true -t herikadocker"
+wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker build . --build-arg INCLUDE_TTS=true --build-arg SERVICE_OPTION=koboldcpp --build-arg VISION_MODEL=qwen -t herikadocker
 if NOT %ERRORLEVEL% == 0 (
     echo HERIKA: ERROR: Failed to build Docker image. Please check the log above for details.
     pause
@@ -19,7 +19,7 @@ if NOT %ERRORLEVEL% == 0 (
 )
 
 echo HERIKA: Running Docker container...
-wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker run --gpus all -d -e SERVICE_OPTION=koboldcpp -e INCLUDE_TTS=true -p 5001:5001 -p 8070:8070 -p 80:80 -v \$(pwd):/home/ubuntu --name herikadocker herikadocker"
+wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker run --gpus all -d -e SERVICE_OPTION=koboldcpp -e INCLUDE_TTS=true -e VISION_MODEL=qwen -p 5001:5001 -p 8070:8070 -p 80:80 -p 8007:8007 -v \$(pwd):/home/ubuntu --name herikadocker herikadocker"
 if NOT %ERRORLEVEL% == 0 (
     echo HERIKA: ERROR: Failed to run Docker container. Please check the log above for details.
     pause

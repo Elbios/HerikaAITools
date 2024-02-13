@@ -5,6 +5,11 @@ if [ "${SERVICE_OPTION}" = "koboldcpp" ]; then
     koboldcpp --usecublas ${KOBOLD_GPU_IDS} --gpulayers 99 --threads 7 --contextsize 2048 --skiplauncher --multiuser 5 --model /models/${LLM_FILENAME} > koboldcpp_log.txt 2>&1 &
 fi
 
+# Checking if VISION_MODEL is set to qwen and starting Qwen server (compatible with llamacpp/llava API)
+if [ "${VISION_MODEL}" = "qwen" ]; then
+    python run_qwen_server.py > qwen_vllm_log.txt 2>&1 &
+fi
+
 # Redirecting stdout and stderr to separate log files for whispercpp
 cd /whispercpp/whisper.cpp && ./server -m models/${WHISPERCPP_MODEL_FILENAME} --host 0.0.0.0 --port 8070 --convert > whispercpp_log.txt 2>&1 &
 
