@@ -1,3 +1,12 @@
+NEW README:
+
+Run Install.bat.
+Run RUN.bat.
+May take a very long time depending on network speed. 
+
+
+OLD README BELOW:
+
 Install Docker on Linux:
 ```
 sudo apt update
@@ -30,31 +39,37 @@ Clone this repository:
 
 Build Docker container:
 
+`docker build . --build-arg INCLUDE_TTS=true --build-arg SERVICE_OPTION=koboldcpp --build-arg VISION_MODEL=qwen -t herikadocker`
+
+or, if you want to just build XTTS without kobold or Qwen:
+
 `docker build . --build-arg INCLUDE_TTS=true -t herikadocker`
 
-Run Docker container:
+Run Docker container (use same flags as when you built, just with -e this time):
 
- `docker run --gpus all -d -e INCLUDE_TTS=true -p 5001:5001 -p 8070:8070 -p 80:80 -v $(pwd):/home/ubuntu --name herikadocker herikadocker`
+ `docker run --gpus all -d -e INCLUDE_TTS=true -p 5001:5001 -p 8070:8070 -p 80:80 -p 8007:8007 -v $(pwd):/home/ubuntu --name herikadocker herikadocker`
 
  (if on Windows, replace $(pwd) with your current directory where the Dockerfile is)
 
 -----------------------------------------------------------------------------------------------------------
  If you make any changes to Dockerfile:
- Rebuild:
+ Rebuild (adjust flags):
 
  `docker build . --build-arg INCLUDE_TTS=true -t herikadocker`
 
- Rerun:
+ Rerun (adjust flags):
 
  `docker rm -f herikadocker`
 
- `docker run --gpus all -d -e INCLUDE_TTS=true -p 5001:5001 -p 8070:8070 -p 80:80 -v $(pwd):/home/ubuntu --name herikadocker herikadocker`
+ `docker run --gpus all -d -e INCLUDE_TTS=true -p 5001:5001 -p 8070:8070 -p 80:80 -p 8007:8007 -v $(pwd):/home/ubuntu --name herikadocker herikadocker`
  
 That's all!
 
 If you want to get a shell into the container to debug stuff:
 
  `docker exec -it herikadocker bash`
+
+And look at *.log files.
 
 If you want to change configurational variables, either use --build-arg when building or edit ARG lines in Dockerfile
 
