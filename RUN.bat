@@ -1,6 +1,10 @@
 @echo off
 setlocal
 
+set /p IncludeTTS=Do you want to run XTTS? (y/n):
+set /p ServiceOption=Do you want to run koboldcpp? (y/n):
+set /p UseQwen=Do you want run Qwen vision model? (y/n):
+
 echo HERIKA: Starting Docker daemon...
 wsl -d DwemerAI4Skyrim2 -e sudo nohup dockerd > docker.log 2>&1 &
 if NOT %ERRORLEVEL% == 0 (
@@ -12,15 +16,31 @@ timeout /t 5 /nobreak > NUL
 
 echo HERIKA: Building Docker image...
 
-set /p UseQwen=Do you want to use Qwen? (y/n):
-
 if /i "%UseQwen%"=="y" (
     set QwenArg=--build-arg VISION_MODEL=qwen
+    set QwenArg2=-e VISION_MODEL=qwen
 ) else (
     set QwenArg=
+    set QwenArg2=
 )
 
-wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker build . --build-arg INCLUDE_TTS=true --build-arg SERVICE_OPTION=koboldcpp %QwenArg% -t herikadocker"
+if /i "%IncludeTTS%"=="y" (
+    set TTSArg=--build-arg INCLUDE_TTS=true
+    set TTSArg2=-e INCLUDE_TTS=true
+) else (
+    set TTSArg=
+    set TTSArg2=
+)
+
+if /i "%ServiceOption%"=="y" (
+    set ServiceOptionArg=--build-arg SERVICE_OPTION=koboldcpp
+    set ServiceOptionArg2=-e SERVICE_OPTION=koboldcpp
+) else (
+    set ServiceOptionArg=
+    set ServiceOptionArg2=
+)
+
+wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker build . %TTSArg% %ServiceOptionArg% %QwenArg% -t herikadocker"
 if NOT %ERRORLEVEL% == 0 (
     echo HERIKA: ERROR: Failed to build Docker image. Please check the log above for details.
     pause
@@ -28,7 +48,7 @@ if NOT %ERRORLEVEL% == 0 (
 )
 
 echo HERIKA: Running Docker container...
-wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker run --gpus all -d -e SERVICE_OPTION=koboldcpp -e INCLUDE_TTS=true -e VISION_MODEL=qwen -p 5001:5001 -p 8070:8070 -p 80:80 -p 8007:8007 -v \$(pwd):/home/ubuntu --name herikadocker herikadocker"
+wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker run --gpus all -d %TTSArg2% %ServiceOptionArg2% %QwenArg2% -p 5001:5001 -p 8070:8070 -p 80:80 -p 8007:8007 -v \$(pwd):/home/ubuntu --name herikadocker herikadocker"
 if NOT %ERRORLEVEL% == 0 (
     echo HERIKA: ERROR: Failed to run Docker container. Please check the log above for details.
     pause
