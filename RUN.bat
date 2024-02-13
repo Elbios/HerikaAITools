@@ -11,7 +11,16 @@ if NOT %ERRORLEVEL% == 0 (
 timeout /t 5 /nobreak > NUL
 
 echo HERIKA: Building Docker image...
-wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker build . --build-arg INCLUDE_TTS=true --build-arg SERVICE_OPTION=koboldcpp --build-arg VISION_MODEL=qwen -t herikadocker
+
+set /p UseQwen=Do you want to use Qwen? (y/n):
+
+if /i "%UseQwen%"=="y" (
+    set QwenArg=--build-arg VISION_MODEL=qwen
+) else (
+    set QwenArg=
+)
+
+wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker build . --build-arg INCLUDE_TTS=true --build-arg SERVICE_OPTION=koboldcpp %QwenArg% -t herikadocker"
 if NOT %ERRORLEVEL% == 0 (
     echo HERIKA: ERROR: Failed to build Docker image. Please check the log above for details.
     pause
