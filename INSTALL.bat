@@ -20,7 +20,7 @@ if NOT %ERRORLEVEL% == 0 (
 )
 
 echo HERIKA: Downloading Docker install script...
-wsl -d DwemerAI4Skyrim2 -e cd /home/dwemer && curl -fsSL https://get.docker.com -o get-docker.sh
+wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer && curl -fsSL https://get.docker.com -o get-docker.sh"
 if NOT %ERRORLEVEL% == 0 (
     echo HERIKA: ERROR: Failed to download Docker install script. Please check the log above for details.
     pause
@@ -28,7 +28,7 @@ if NOT %ERRORLEVEL% == 0 (
 )
 
 echo HERIKA: Installing Docker...
-wsl -d DwemerAI4Skyrim2 -e cd /home/dwemer && sudo sh get-docker.sh
+wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer && sudo sh get-docker.sh"
 if NOT %ERRORLEVEL% == 0 (
     echo HERIKA: ERROR: Failed to install Docker. Please check the log above for details.
     pause
@@ -68,7 +68,7 @@ if NOT %ERRORLEVEL% == 0 (
 )
 
 echo HERIKA: Cloning HerikaAITools repository...
-wsl -d DwemerAI4Skyrim2 -e cd /home/dwemer && git clone https://github.com/Elbios/HerikaAITools.git
+wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer && git clone https://github.com/Elbios/HerikaAITools.git"
 if NOT %ERRORLEVEL% == 0 (
     echo HERIKA: ERROR: Failed to clone repository. Please check the log above for details.
     pause
