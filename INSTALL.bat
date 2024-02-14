@@ -35,14 +35,6 @@ if NOT %ERRORLEVEL% == 0 (
     exit /b %ERRORLEVEL%
 )
 
-echo HERIKA: Adding user to the Docker group...
-wsl -d DwemerAI4Skyrim2 -e sudo usermod -aG docker $USER
-if NOT %ERRORLEVEL% == 0 (
-    echo HERIKA: ERROR: Failed to add user to Docker group. Please check the log above for details.
-    pause
-    exit /b %ERRORLEVEL%
-)
-
 echo HERIKA: Setting up NVIDIA Container Toolkit...
 wsl -d DwemerAI4Skyrim2 -e bash -c "curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list"
 if NOT %ERRORLEVEL% == 0 (
