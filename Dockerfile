@@ -72,14 +72,22 @@ RUN git clone https://github.com/ggerganov/whisper.cpp.git && \
     make -j && \
     bash ./models/download-ggml-model.sh ${WHISPERCPP_MODEL}
 
+WORKDIR /llava
+COPY llava_server_cpu .
+COPY llava_server_cuda .
+
 WORKDIR /qwen
 COPY qwen_requirements.txt .
 
 # Install dependencies for Qwen vision model (for Herika Soulgaze) if selected
 RUN if [ "${VISION_MODEL}" = "qwen" ]; then \
-        pip install -r qwen_requirements.txt \
-        pip install flask optimum gekko auto-gptq tiktoken transformers_stream_generator accelerate einops olefile \
-    ; fi
+        pip install -r qwen_requirements.txt && \
+        pip install flask optimum gekko auto-gptq tiktoken transformers_stream_generator accelerate einops olefile; \
+    elif [ "${VISION_MODEL}" = "llava_cpu" ] || [ "${VISION_MODEL}" = "llava_gpu" ]; then \
+        mkdir -p /models && \
+        curl -L https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/mistral-7b-q_5_k.gguf?download=true -o /models/mistral-7b-q_5_k.gguf && \
+        curl -L https://huggingface.co/cmp-nct/llava-1.6-gguf/blob/main/mmproj-mistral7b-f16.gguf -o /models/mmproj-mistral7b-f16.gguf; \
+    fi
 
 WORKDIR /home/ubuntu
 
