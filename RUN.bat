@@ -5,12 +5,17 @@ set /p IncludeTTS=Do you want to run XTTS? (y/n):
 set /p ServiceOption=Do you want to run koboldcpp? (y/n):
 set /p UseQwen=Do you want run Qwen vision model? (y/n):
 
+echo HERIKA: Checking if Docker daemon is running...
 
-echo HERIKA: Starting Docker daemon...
-wsl -d DwemerAI4Skyrim2 -e sudo nohup dockerd > docker.log 2>&1 &
-
-echo HERIKA: Waiting for Docker to be ready..
-timeout /t 5 /nobreak > NUL
+REM Check if dockerd is running
+wsl -d DwemerAI4Skyrim2 -- pgrep dockerd >nul 2>&1
+if NOT %ERRORLEVEL% == 0 (
+    echo HERIKA: Docker daemon not running.
+    wsl -d DwemerAI4Skyrim2 -e nohup sh -c "dockerd &"
+    echo HERIKA: Started Docker daemon.
+) ELSE (
+    echo HERIKA: Docker daemon already running.
+)
 
 echo HERIKA: Building Docker image...
 
@@ -46,6 +51,7 @@ if NOT %ERRORLEVEL% == 0 (
 )
 
 echo HERIKA: Running Docker container...
+wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker rm -f herikadocker"
 wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer/HerikaAITools && docker run --gpus all -d %TTSArg2% %ServiceOptionArg2% %QwenArg2% -p 5001:5001 -p 8070:8070 -p 80:80 -p 8007:8007 -v /home/dwemer/HerikaAITools:/home/ubuntu --name herikadocker herikadocker"
 if NOT %ERRORLEVEL% == 0 (
     echo HERIKA: ERROR: Failed to run Docker container. Please check the log above for details.
