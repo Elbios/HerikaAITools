@@ -19,6 +19,14 @@ if NOT %ERRORLEVEL% == 0 (
     exit /b %ERRORLEVEL%
 )
 
+echo HERIKA: Checking if Docker is installed...
+wsl -d DwemerAI4Skyrim2 -e bash -c "command -v docker"
+if %ERRORLEVEL% == 0 (
+    echo HERIKA: Docker command exists, assuming all dependencies already installed. Exiting script.
+    pause
+    exit /b 0
+)
+
 echo HERIKA: Downloading Docker install script...
 wsl -d DwemerAI4Skyrim2 -e bash -c "cd /home/dwemer && curl -fsSL https://get.docker.com -o get-docker.sh"
 if NOT %ERRORLEVEL% == 0 (
@@ -67,20 +75,20 @@ if NOT %ERRORLEVEL% == 0 (
     exit /b %ERRORLEVEL%
 )
 
-echo HERIKA: Enabling systemd in /etc/wsl.conf...
-:: Check if /etc/wsl.conf exists
-wsl -d DwemerAI4Skyrim2 -e test -f /etc/wsl.conf
-if NOT %ERRORLEVEL% == 0 (
-    :: Append the necessary lines to /etc/wsl.conf
-    wsl -d DwemerAI4Skyrim2 echo "[boot]" | sudo tee -a /etc/wsl.conf >nul
-    wsl -d DwemerAI4Skyrim2 echo "systemd=true" | sudo tee -a /etc/wsl.conf >nul
-
-    if NOT %ERRORLEVEL% == 0 (
-        echo ERROR: Failed to modify /etc/wsl.conf. Please check your permissions.
-        pause
-        exit /b %ERRORLEVEL%
-    )
-)
+::echo HERIKA: Enabling systemd in /etc/wsl.conf...
+:::: Check if /etc/wsl.conf exists
+::wsl -d DwemerAI4Skyrim2 -e test -f /etc/wsl.conf
+::if NOT %ERRORLEVEL% == 0 (
+::    :: Append the necessary lines to /etc/wsl.conf
+::    wsl -d DwemerAI4Skyrim2 echo "[boot]" | sudo tee -a /etc/wsl.conf >nul
+::    wsl -d DwemerAI4Skyrim2 echo "systemd=true" | sudo tee -a /etc/wsl.conf >nul
+::
+::    if NOT %ERRORLEVEL% == 0 (
+::        echo ERROR: Failed to modify /etc/wsl.conf. Please check your permissions.
+::        pause
+::        exit /b %ERRORLEVEL%
+::    )
+::)
 wsl -t DwemerAI4Skyrim2
 
 echo HERIKA: Installation completed successfully!

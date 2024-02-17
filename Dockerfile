@@ -6,10 +6,11 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Argument to control the inclusion of TTS
 ARG INCLUDE_TTS=false
 # Use SERVICE_OPTION=none to disable
-ARG SERVICE_OPTION=koboldcpp
+ARG SERVICE_OPTION=none
 # Use VISION_MODEL=none to disable
 ARG VISION_MODEL=none
 # New ARG for whispercpp model option
+ARG WHISPER_MODE=cpu
 ARG WHISPERCPP_MODEL=base.en
 ENV WHISPERCPP_MODEL_FILENAME=ggml-base.en.bin
 # Filename of LLM, like: dolphin-2_6-phi-2.Q2_K.gguf (fill in both)
@@ -48,9 +49,6 @@ RUN if [ "${INCLUDE_TTS}" = "true" ]; then \
         # Additional TTS setup steps here (remove this line if no additional steps are required)
     fi
 	
-
-
-
 # Environment variables for TTS
 ENV NVIDIA_DISABLE_REQUIRE=0
 ENV NUM_THREADS=2
@@ -66,10 +64,16 @@ RUN if [ "${SERVICE_OPTION}" = "koboldcpp" ]; then \
 
 WORKDIR /whispercpp
 
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/cuda/lib64:/usr/lib/x86_64-linux-gnu:/usr/local/cuda-12.1/compat:$LD_LIBRARY_PATH
 # Installation of whispercpp and downloading the specified model
-RUN git clone https://github.com/ggerganov/whisper.cpp.git && \
+RUN  git clone https://github.com/ggerganov/whisper.cpp.git && \
     cd whisper.cpp && \
-    make -j && \
+    export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH && \
+    if [ "${WHISPER_MODE}" = "cuda" ]; then \
+        WHISPER_CUBLAS=1 make -j; \
+    else \
+        WHISPER_CUBLAS=0 make -j; \
+    fi && \
     bash ./models/download-ggml-model.sh ${WHISPERCPP_MODEL}
 
 WORKDIR /llava
@@ -91,11 +95,4 @@ RUN if [ "${VISION_MODEL}" = "qwen" ]; then \
 
 WORKDIR /home/ubuntu
 
-## Copy the start_all_services.sh script into the container
-#COPY start_all_services.sh /app
-## Make sure the script is executable
-#RUN chmod +x /app/start_all_services.sh
-
-# Replace the final CMD with the new entry point script
-#CMD ["bash start_all_services.sh"]
 CMD ["bash", "start_all_services.sh"]
