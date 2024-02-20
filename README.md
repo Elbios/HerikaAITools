@@ -1,11 +1,69 @@
-NEW README:
+# Local AI services for Herika
 
-Run Install.bat.
+## Requirements
+- NVIDIA GPU
+
+- Herika DwemerDistro from Nexus installed (with name DwemerAI4Skyrim2)
+
+- Potentially a lot of disk space (tens of GB) and RAM depending on selected options
+### What is included
+- Pytorch Docker with CUDA ready to go
+
+- localwhisper STT (whispercpp, CPU or GPU mode, base.en by default)
+
+- koboldcpp loaded with a small model for testing (Toppy-7B-q4_k_s)
+
+- XTTSv2 for TTS (official Coqui version of API server)
+
+- vision model (Qwen or Llava 1.6)
+
+All parts are optional, .bat scripts ask you what to include, otherwise you can modify top part of Dockerfile (the ARG and ENV arguments)
+
+### NEW README:
+
+Run Install.bat, wait until it completes.
+
 Run RUN.bat.
+
 May take a very long time depending on network speed. 
 
+TIP: RAM usage can be high. To mitigate that, update WSL to latest:
 
-OLD README BELOW:
+`wsl --update --pre-release`
+
+and optionally, create `C:/Users/<USER>/.wslconfig` text file with:
+```
+[wsl2]
+memory=12GB
+```
+That will limit maximum RAM use for all WSL to 12GB.
+
+TIP: best way to refresh WSL/fix random WSL issues is restarting Windows, second best is `wsl --shutdown` and waiting at least 10 seconds
+
+TIP: use `wsl hostname -I` to find out your WSL IP - use that to access backend services in browser on host
+
+
+### DEBUGGING:
+`wsl -d DwemerAI4Skyrim2`
+
+then
+
+`cd /home/ubuntu`
+
+you'll find koboldcpp, qwen and llava logs. You can also get a shell into Docker:
+
+`docker exec -it herikadocker bash`
+
+In `/xtts_app` you'll find XTTS logs and in `/whispercpp/whisper.cpp` the whispercpp logs.
+
+Also this:
+
+`docker ps`
+
+`docker logs herikaserver`
+
+
+### OLD README BELOW (ignore):
 
 Install Docker on Linux:
 ```
@@ -74,7 +132,7 @@ And look at *.log files.
 If you want to change configurational variables, either use --build-arg when building or edit ARG lines in Dockerfile
 
 --------------------------------------------------------------------------------------------------------
-MISCELLANEOUS:
+#### MISCELLANEOUS:
 
 Assign specific GPU to koboldcpp (e.g. GPU0) - use KOBOLD_GPU_IDS env var:
 `docker run --gpus all -d -e KOBOLD_GPU_IDS="0" -e SERVICE_OPTION=koboldcpp -e INCLUDE_TTS=true -p 5001:5001 -p 8070:8070 -p 80:80 -v $(pwd):/home/ubuntu --name herikadocker herikadocker`
