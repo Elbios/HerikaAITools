@@ -50,17 +50,15 @@ then
 
 `cd /home/ubuntu`
 
-you'll find koboldcpp, qwen and llava logs. You can also get a shell into Docker:
+you'll find koboldcpp, qwen, llava, xtts and whispercpp logs. You can also get a shell into Docker and poke around:
 
 `docker exec -it herikadocker bash`
-
-In `/xtts_app` you'll find XTTS logs and in `/whispercpp/whisper.cpp` the whispercpp logs.
 
 Also this:
 
 `docker ps`
 
-`docker logs herikaserver`
+`docker logs herikadocker`
 
 
 ### OLD README BELOW (ignore):
