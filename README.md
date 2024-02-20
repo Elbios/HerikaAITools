@@ -60,6 +60,34 @@ Also this:
 
 `docker logs herikadocker`
 
+### USING XTTS WITH HERIKA:
+
+Check if Coqui XTTS server is running by going to http://localhost:80 on your Windows host (if it fails, check also http://WSL_IP:80 where WSL_IP is result of `wsl hostname -I`)
+
+On the XTTS webpage:
+
+- go to clone_speaker -> Try it
+
+- choose .wav file with your reference voice audio sample (5-10seconds maximum, best to have it converted to 22050Hz and Mono, you can use Audacity for that)
+
+- wait for it to clone and you should get an output JSON file, name it 'my_voice.json' and save it in:
+
+`\\wsl.localhost\DwemerAI4Skyrim2\var\www\html\HerikaServer\tts\data`
+folder
+
+Then in conf.php for Herika set:
+
+```
+$TTSFUNCTION='xtts';
+$TTS["XTTS"]["endpoint"]='http://localhost:80/';	//End point
+$TTS["XTTS"]["language"]='en';	//
+$TTS["XTTS"]["voiceid"]='my_voice';	//Voice json file
+```
+
+That's it!
+
+You can also try female_young_eager.json in this repo as an example voice, without having to go through the cloning process. In conf.php, voiceid will be 'female_young_eager'.
+
 
 ### OLD README BELOW (ignore):
 
