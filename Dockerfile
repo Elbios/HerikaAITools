@@ -66,15 +66,17 @@ WORKDIR /whispercpp
 
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/cuda/lib64:/usr/lib/x86_64-linux-gnu:/usr/local/cuda-12.1/compat:$LD_LIBRARY_PATH
 # Installation of whispercpp and downloading the specified model
-RUN  git clone https://github.com/ggerganov/whisper.cpp.git && \
+RUN if [ "${WHISPER_MODE}" != "none" ]; then \
+    git clone https://github.com/ggerganov/whisper.cpp.git && \
     cd whisper.cpp && \
     export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH && \
     if [ "${WHISPER_MODE}" = "cuda" ]; then \
-        WHISPER_CUBLAS=1 make -j; \
+        GGML_CUDA=1 make -j; \
     else \
-        WHISPER_CUBLAS=0 make -j; \
+        GGML_CUDA=0 make -j; \
     fi && \
-    bash ./models/download-ggml-model.sh ${WHISPERCPP_MODEL}
+    bash ./models/download-ggml-model.sh ${WHISPERCPP_MODEL}; \
+fi
 
 WORKDIR /llava
 COPY llava_server_cpu .

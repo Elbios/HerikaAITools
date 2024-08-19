@@ -6,7 +6,7 @@ import sys
 
 # Check if the correct number of arguments are provided
 if len(sys.argv) != 3:
-    print("Usage: script.py <'qwen'/'llava'> <path_to_image>")
+    print("Usage: script.py <'qwen'/'llava'/'minicpm'> <path_to_image>")
     sys.exit(1)
 
 # Extract arguments
@@ -69,4 +69,7 @@ response = requests.post(url, headers=headers, data=json_data)
 # Parse the JSON response
 response_data = response.json()
 # Example of handling the response data
-print(response_data["content"])
+if command == 'minicpm':
+    print(response.json())
+else:
+    print(response_data["content"])

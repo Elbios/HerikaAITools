@@ -3,7 +3,7 @@
 ## Requirements
 - NVIDIA GPU
 
-- Herika DwemerDistro from Nexus installed (with name DwemerAI4Skyrim2)
+- Herika DwemerDistro from Nexus installed (with name DwemerAI4Skyrim2 or DwemerAI4Skyrim3 if using AIFF)
 
 - Potentially a lot of disk space (tens of GB) and RAM depending on selected options
 ### What is included
@@ -46,6 +46,10 @@ TIP: use `wsl hostname -I` to find out your WSL IP - use that to access backend 
 ### DEBUGGING:
 `wsl -d DwemerAI4Skyrim2`
 
+or if using AIFF:
+
+`wsl -d DwemerAI4Skyrim3`
+
 then
 
 `cd /home/ubuntu`
@@ -74,6 +78,9 @@ On the XTTS webpage:
 
 `\\wsl.localhost\DwemerAI4Skyrim2\var\www\html\HerikaServer\tts\data`
 folder
+
+or `\\wsl.localhost\DwemerAI4Skyrim3\var\www\html\HerikaServer\tts\data`
+if using AIFF
 
 Then in conf.php for Herika set:
 
