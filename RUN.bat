@@ -3,7 +3,7 @@ setlocal
 
 set /p IncludeTTS=Do you want to run XTTS? (y/n):
 set /p ServiceOption=Do you want to run koboldcpp? (y/n):
-set /p VisionModel=Which vision model do you want to run? (qwen/llava_cpu/llava_gpu/none):
+set /p VisionModel=Which vision model do you want to run? (minicpm/qwen/llava_cpu/llava_gpu/none):
 set /p WhisperMode=Do you want to run Whisper STT in CPU mode or GPU(CUDA) mode? (cpu/cuda):
 
 echo HERIKA: Checking if Docker daemon is running...
@@ -41,6 +41,9 @@ if /i "%VisionModel%"=="qwen" (
 ) else if /i "%VisionModel%"=="llava_gpu" (
     set VisionArg=--build-arg VISION_MODEL=llava_gpu
     set VisionArg2=-e VISION_MODEL=llava_gpu
+) else if /i "%VisionModel%"=="minicpm" (
+    set VisionArg=--build-arg VISION_MODEL=minicpm
+    set VisionArg2=-e VISION_MODEL=minicpm
 ) else if /i "%VisionModel%"=="none" (
     set VisionArg=
     set VisionArg2=

@@ -15,7 +15,7 @@
 
 - XTTSv2 for TTS (official Coqui version of API server)
 
-- vision model (Qwen or Llava 1.6)
+- vision model (Qwen or Llava 1.6 or MiniCPM-V-2_6)
 
 All parts are optional, .bat scripts ask you what to include, otherwise you can modify top part of Dockerfile (the ARG and ENV arguments)
 

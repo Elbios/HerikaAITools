@@ -91,6 +91,13 @@ RUN if [ "${VISION_MODEL}" = "qwen" ]; then \
         mkdir -p /models && \
         curl -L https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/mistral-7b-q_5_k.gguf?download=true -o /models/mistral-7b-q_5_k.gguf && \
         curl -L https://huggingface.co/cmp-nct/llava-1.6-gguf/blob/main/mmproj-mistral7b-f16.gguf -o /models/mmproj-mistral7b-f16.gguf; \
+    elif [ "${VISION_MODEL}" = "minicpm" ]; then \
+        if [ ! -f /usr/bin/koboldcpp ]; then \
+            curl -fLo /usr/bin/koboldcpp https://koboldai.org/cpplinux && chmod +x /usr/bin/koboldcpp; \
+        fi && \
+        mkdir -p /models && \
+        curl -L https://huggingface.co/openbmb/MiniCPM-V-2_6-gguf/resolve/main/ggml-model-Q4_K_M.gguf?download=true -o /models/ggml-model-Q4_K_M.gguf && \
+        curl -L https://huggingface.co/openbmb/MiniCPM-V-2_6-gguf/resolve/main/mmproj-model-f16.gguf?download=true -o /models/mmproj-model-f16.gguf; \
     fi
 
 WORKDIR /home/ubuntu

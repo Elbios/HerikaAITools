@@ -13,8 +13,8 @@ if len(sys.argv) != 3:
 command, file_path = sys.argv[1], sys.argv[2]
 
 # Check if the command is valid
-if command not in ['qwen', 'llava']:
-    print("First argument must be either 'qwen' or 'llava'")
+if command not in ['qwen', 'llava', 'minicpm']:
+    print("First argument must be either 'qwen' or 'llava' or 'minicpm'")
     sys.exit(1)
 
 # Check if the file path exists
@@ -23,6 +23,8 @@ if not os.path.exists(file_path):
     sys.exit(1)
 
 url = 'http://localhost:8007/completion'  # The URL to send the request to
+if command == 'minicpm':
+    url = "http://localhost:5002/api/v1/generate" # koboldcpp endpoint (not the main LLM one, but vision one on 5002)
 
 # Encode the image file in base64
 with open(file_path, "rb") as image_file:
@@ -41,7 +43,18 @@ elif command == 'llava':
         'image_data': [{"data": base64_encoded, "id": 1}],
         'temperature': 0.0
     }
-
+elif command == 'minicpm':
+    post_data = {
+        "max_context_length": 4096,
+        "max_length": 400,
+        "prompt": "<|im_start|>user\nDescribe the image in detail.<|im_end|>\n<|im_start|>assistant\n",
+        "quiet": False,
+        "rep_pen": 1.05,
+        "temperature": 0.15,
+        "top_k": 100,
+        "top_p": 0.8
+    }
+    post_data["images"] = [base64_encoded]
 # Encode the data as JSON
 json_data = json.dumps(post_data)
 
