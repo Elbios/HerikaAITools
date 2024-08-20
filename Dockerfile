@@ -38,15 +38,12 @@ COPY main.py .
 # Copy requirements for Python packages for TTS
 COPY requirements.txt .
 
-# Install Python packages
-RUN python -m pip install --use-deprecated=legacy-resolver -r requirements.txt \
-    && python -m pip cache purge
-
 # Conditional TTS setup
 RUN if [ "${INCLUDE_TTS}" = "true" ]; then \
+		python -m pip install --use-deprecated=legacy-resolver -r requirements.txt \
+		&& python -m pip cache purge && \
         python -m unidic download; \
         mkdir -p /xtts_app/tts_models; \
-        # Additional TTS setup steps here (remove this line if no additional steps are required)
     fi
 	
 # Environment variables for TTS
