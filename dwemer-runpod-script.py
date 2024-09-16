@@ -1,3 +1,6 @@
+# SSH tunneling adapted from:
+# https://github.com/paramiko/paramiko/blob/main/demos/forward.py
+
 import paramiko
 import socket
 import select
@@ -63,24 +66,32 @@ class Handler(SocketServer.BaseRequestHandler):
         if chan is None:
             print(f"Incoming request to {self.chain_host}:{self.chain_port} was rejected by the SSH server.")
             return
- 
-        print(f"Tunnel open: {self.request.getpeername()} -> {chan.getpeername()} -> ({self.chain_host}, {self.chain_port})")
-        while True:
-            r, w, x = select.select([self.request, chan], [], [])
-            if self.request in r:
-                data = self.request.recv(1024)
-                if len(data) == 0:
-                    break
-                chan.send(data)
-            if chan in r:
-                data = chan.recv(1024)
-                if len(data) == 0:
-                    break
-                self.request.send(data)
- 
-        chan.close()
-        self.request.close()
-        print(f"Tunnel closed from {self.request.getpeername()}.")
+
+        try:
+            print(f"Tunnel open: {self.request.getpeername()} -> {chan.getpeername()} -> ({self.chain_host}, {self.chain_port})")
+            tunnel_info = (f"Tunnel: {self.request.getpeername()} -> {chan.getpeername()} -> ({self.chain_host}, {self.chain_port})")
+            while True:
+                r, w, x = select.select([self.request, chan], [], [])
+                if self.request in r:
+                    data = self.request.recv(1024)
+                    if len(data) == 0:
+                        break
+                    chan.send(data)
+                if chan in r:
+                    data = chan.recv(1024)
+                    if len(data) == 0:
+                        break
+                    self.request.send(data)
+        except Exception as e:
+            print(f"Error during tunnel communication: {e}")
+        finally:
+            # Ensure the sockets are closed properly
+            if chan:
+                chan.close()
+            if self.request:
+                self.request.close()
+            print(f"Tunnel closed. " + tunnel_info)
+
  
 # Set up local forwarding using Paramiko
 def forward_tunnel(local_port, remote_host, remote_port, transport):
