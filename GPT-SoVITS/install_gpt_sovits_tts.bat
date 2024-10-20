@@ -54,7 +54,7 @@ if NOT %ERRORLEVEL% == 0 (
 )
 
 echo HERIKA: Downloading and extracting pretrained models...
-wsl -d %WSL_NAME% -u %WSL_USER% -e bash -c "cd /home/dwemer && wget https://huggingface.co/lj1995/GPT-SoVITS-windows-package/resolve/main/GPT-SoVITS-v2-240821.7z && 7z x GPT-SoVITS-v2-240821.7z && mkdir -p /home/dwemer/GPT-SoVITS/GPT_SoVITS/pretrained_models && cp -r /home/dwemer/GPT-SoVITS-v2-240821/GPT_SoVITS/pretrained_models/* /home/dwemer/GPT-SoVITS/GPT_SoVITS/pretrained_models/ && rm -rf /home/dwemer/GPT-SoVITS-v2-240821.7z /home/dwemer/GPT-SoVITS-v2-240821"
+wsl -d %WSL_NAME% -u %WSL_USER% -e bash -c "cd /home/dwemer && wget https://huggingface.co/lj1995/GPT-SoVITS-windows-package/resolve/main/GPT-SoVITS-v2-240821.7z && 7z x GPT-SoVITS-v2-240821.7z GPT-SoVITS-v2-240821/GPT_SoVITS/pretrained_models/ && mv /home/dwemer/GPT-SoVITS-v2-240821/GPT_SoVITS/pretrained_models /home/dwemer/GPT-SoVITS/GPT_SoVITS/ && rm -rf /home/dwemer/GPT-SoVITS-v2-240821.7z /home/dwemer/GPT-SoVITS-v2-240821"
 if NOT %ERRORLEVEL% == 0 (
     echo HERIKA: ERROR: Failed to download or extract pretrained models. Please check the log above for details.
     pause
