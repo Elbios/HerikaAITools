@@ -18,8 +18,9 @@ sudo apt-get install -y gcc g++ ffmpeg cmake p7zip-full git wget
 echo "HERIKA: Installing Miniconda..."
 if [ ! -d "$HOME_DIR/miniconda3" ]; then
     echo "Miniconda not found. Installing..."
+    mkdir -p "$HOME_DIR/miniconda3"
     wget -nc https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O "$HOME_DIR/miniconda3/miniconda.sh"
-    bash "$HOME_DIR/miniconda3/miniconda.sh" -b -p "$HOME_DIR/miniconda3"
+    bash "$HOME_DIR/miniconda3/miniconda.sh" -b -u -p "$HOME_DIR/miniconda3"
 else
     echo "Miniconda is already installed. Skipping installation."
 fi
