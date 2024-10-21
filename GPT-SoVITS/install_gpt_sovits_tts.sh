@@ -88,4 +88,8 @@ else
     echo "CPU inference configuration already exists. Skipping."
 fi
 
+# Download NLTK Data
+echo "HERIKA: Downloading NLTK data..."
+python -c "import nltk; nltk.download('averaged_perceptron_tagger_eng')"
+
 echo "HERIKA: Installation completed successfully!"
