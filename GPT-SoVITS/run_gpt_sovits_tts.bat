@@ -29,7 +29,7 @@ REM ============================================================================
 REM Step 2: Activate Conda environment and run the API server
 REM =============================================================================
 
-echo Starting GPT-SoVITS API server in %MODE% mode...
+echo Starting GPT-SoVITS API server in %MODE% mode at port 9880..
 
 REM Navigate to project directory and run the server
 wsl -d %WSL_DISTRO% -e bash -c "source /home/dwemer/miniconda3/bin/activate && conda activate GPTSoVits && cd /home/dwemer/GPT-SoVITS && python api_v2.py -a 0.0.0.0 -p 9880 -c %CONFIG_FILE%"
@@ -39,8 +39,6 @@ if NOT %ERRORLEVEL% == 0 (
     pause
     exit /b %ERRORLEVEL%
 )
-
-echo GPT-SoVITS API server is running successfully!
 
 endlocal
 pause
