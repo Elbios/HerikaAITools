@@ -103,7 +103,7 @@ function tts($textString, $mood, $stringforhash) {
     }
 
     // Optional: Wait for weights to load if necessary
-    sleep(1); // Adjust based on server's loading time
+    //sleep(1); // Adjust based on server's loading time
 
     // Step 2: Determine language and voice from globals
     // Restoring the commented code to fetch from globals
