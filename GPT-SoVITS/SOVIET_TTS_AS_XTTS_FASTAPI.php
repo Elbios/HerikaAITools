@@ -83,7 +83,8 @@ function tts($textString, $mood, $stringforhash) {
     $server_url = 'http://127.0.0.1:9880'; // Update if different
     $gpt_weights_path = "GPT_SoVITS/pretrained_models/s1bert25hz-2kh-longer-epoch=68e-step=50232.ckpt";
     $sovits_weights_path = "GPT_SoVITS/pretrained_models/s2G488k.pth";
-    $refer_audio_path = "archive_jingyuan_1.wav";
+    //$refer_audio_path = "archive_jingyuan_1.wav";
+    $refer_audio_path = "/home/dwemer/speakers-GPT-SoVITS/daegon.wav";
 
     // Step 1: Set Weights (This should ideally be done once, not per TTS call)
     // To minimize changes, we're including it here. For optimization, consider setting weights during initialization.
@@ -93,7 +94,7 @@ function tts($textString, $mood, $stringforhash) {
     }
 
     // Optional: Wait for weights to load if necessary
-    sleep(2); // Adjust based on server's loading time
+    sleep(1); // Adjust based on server's loading time
 
     // Step 2: Set Reference Audio
     if (!set_reference_audio($server_url, $refer_audio_path)) {
@@ -201,7 +202,6 @@ $textTosay = "先帝创业未半而中道崩殂，今天下三分，益州疲弊
 
 echo tts($textTosay, '', $textTosay) . PHP_EOL;
 */
-
 /*
 $GLOBALS["TTS"]["XTTSFASTAPI"]["endpoint"]='http://localhost:8020';
 $GLOBALS["TTS"]["XTTSFASTAPI"]["voiceid"]='daegon';
@@ -210,5 +210,5 @@ $GLOBALS["TTS"]["XTTSFASTAPI"]["language"]='en';
 $textTosay="Hello fellows, this is a new text to speech connector";
 
 echo tts($textTosay,'',$textTosay).PHP_EOL;
-*/
+ */
 ?>
