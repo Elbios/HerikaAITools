@@ -61,6 +61,14 @@ if NOT %ERRORLEVEL% == 0 (
     exit /b %ERRORLEVEL%
 )
 
+echo HERIKA: Adding optional CPU inference config...
+wsl -d %WSL_NAME% -u %WSL_USER% -e bash -c "cd /home/dwemer/GPT-SoVITS/GPT_SoVITS/configs && cp tts_infer.yaml tts_infer_cpu.yaml && sed -i 's/device: cuda/device: cpu/g; s/is_half: true/is_half: false/g' tts_infer_cpu.yaml"
+if NOT %ERRORLEVEL% == 0 (
+    echo HERIKA: ERROR: Failed to configure YAML for CPU inference. Please check the log above for details.
+    pause
+    exit /b %ERRORLEVEL%
+)
+
 echo HERIKA: Installation completed successfully!
 endlocal
 pause
