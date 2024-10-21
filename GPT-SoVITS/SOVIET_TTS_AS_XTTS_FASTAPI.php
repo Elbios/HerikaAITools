@@ -76,15 +76,24 @@ function send_get_request($url, $params) {
     return json_decode($result, true);
 }
 
+// Load voiceid to transcript mapping
+$mappingFile = '/home/dwemer/speakers-GPT-SoVITS/voiceid_to_transcript.json'; // **Update this path to your JSON file**
+if (!file_exists($mappingFile)) {
+    die("Mapping file not found at '$mappingFile'. Please check the path.");
+}
+$voiceidToTranscript = json_decode(file_get_contents($mappingFile), true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    die("Error decoding JSON mapping: " . json_last_error_msg());
+}
+
 function tts($textString, $mood, $stringforhash) {
+    global $voiceidToTranscript; // Access the global mapping
 
     echo "Starting TTS function..." . PHP_EOL;
     // Define server URL and paths (These should be configured as per your setup)
     $server_url = 'http://127.0.0.1:9880'; // Update if different
     $gpt_weights_path = "GPT_SoVITS/pretrained_models/s1bert25hz-2kh-longer-epoch=68e-step=50232.ckpt";
     $sovits_weights_path = "GPT_SoVITS/pretrained_models/s2G488k.pth";
-    //$refer_audio_path = "archive_jingyuan_1.wav";
-    $refer_audio_path = "/home/dwemer/speakers-GPT-SoVITS/daegon.wav";
 
     // Step 1: Set Weights (This should ideally be done once, not per TTS call)
     // To minimize changes, we're including it here. For optimization, consider setting weights during initialization.
@@ -96,12 +105,41 @@ function tts($textString, $mood, $stringforhash) {
     // Optional: Wait for weights to load if necessary
     sleep(1); // Adjust based on server's loading time
 
-    // Step 2: Set Reference Audio
-    if (!set_reference_audio($server_url, $refer_audio_path)) {
-        error_log("Failed to set reference audio.");
+    // Step 2: Determine language and voice from globals
+    // Restoring the commented code to fetch from globals
+    $lang = isset($GLOBALS["TTS"]["FORCED_LANG_DEV"]) ? $GLOBALS["TTS"]["FORCED_LANG_DEV"] : (isset($GLOBALS["TTS"]["XTTSFASTAPI"]["language"]) ? $GLOBALS["TTS"]["XTTSFASTAPI"]["language"] : 'en');
+    if (isset($GLOBALS["LLM_LANG"]) && isset($GLOBALS["LANG_LLM_XTTS"]) && $GLOBALS["LANG_LLM_XTTS"]) {
+        $lang = $GLOBALS["LLM_LANG"];
+    }
+    if (empty($lang)) {
+        $lang = isset($GLOBALS["TTS"]["XTTSFASTAPI"]["language"]) ? $GLOBALS["TTS"]["XTTSFASTAPI"]["language"] : 'en';
+    }
+
+    $voice = isset($GLOBALS["TTS"]["FORCED_VOICE_DEV"]) ? $GLOBALS["TTS"]["FORCED_VOICE_DEV"] : (isset($GLOBALS["TTS"]["XTTSFASTAPI"]["voiceid"]) ? $GLOBALS["TTS"]["XTTSFASTAPI"]["voiceid"] : '');
+    if (empty($voice)) {
+        $voice = isset($GLOBALS["TTS"]["XTTSFASTAPI"]["voiceid"]) ? $GLOBALS["TTS"]["XTTSFASTAPI"]["voiceid"] : '';
+    }
+
+    if (empty($voice)) {
+        error_log("Voice ID is not set in globals.");
         return false;
     }
 
+    // Step 3: Retrieve transcript from mapping
+    if (!isset($voiceidToTranscript[$voice])) {
+        error_log("Transcript for voiceid '$voice' not found in the mapping.");
+        return false;
+    }
+    $transcript = $voiceidToTranscript[$voice];
+
+    // Step 4: Set reference audio path based on voiceid
+    $refer_audio_path = "/home/dwemer/speakers-GPT-SoVITS/" . $voice . ".wav"; // Adjust the path if necessary
+
+    // Step 5: Set Reference Audio
+    if (!set_reference_audio($server_url, $refer_audio_path)) {
+        error_log("Failed to set reference audio for voiceid '$voice'.");
+        return false;
+    }
 
     $newString = $textString;
 
@@ -109,35 +147,12 @@ function tts($textString, $mood, $stringforhash) {
 
     $tts_url = $server_url . "/tts";
 
-    // Request headers
-    $headers = array(
-        'Accept: audio/wav',
-        'Content-Type: application/json'
-    );
-
-//    // Determine language
-//    $lang = isset($GLOBALS["TTS"]["FORCED_LANG_DEV"]) ? $GLOBALS["TTS"]["FORCED_LANG_DEV"] : $GLOBALS["TTS"]["XTTSFASTAPI"]["language"];
-//    if (isset($GLOBALS["LLM_LANG"]) && isset($GLOBALS["LANG_LLM_XTTS"]) && $GLOBALS["LANG_LLM_XTTS"]) {
-//        $lang = $GLOBALS["LLM_LANG"];
-//    }
-//    if (empty($lang)) {
-//        $lang = $GLOBALS["TTS"]["XTTSFASTAPI"]["language"];
-//    }
-//
-//    // Determine voice
-//    $voice = isset($GLOBALS["TTS"]["FORCED_VOICE_DEV"]) ? $GLOBALS["TTS"]["FORCED_VOICE_DEV"] : $GLOBALS["TTS"]["XTTSFASTAPI"]["voiceid"];
-//    if (empty($voice)) {
-//        $voice = $GLOBALS["TTS"]["XTTSFASTAPI"]["voiceid"];
-//    }
-    $lang = "en";
-    $voice = "daegon";
-
     // Prepare TTS data payload
     $tts_data = array(
         "text" => $newString,
         "text_lang" => $lang,
         "ref_audio_path" => $refer_audio_path,
-        "prompt_text" => "Potions could use some work, though. I don't even understand it. The Forsworn are a cult of savages, right? Actually, in his last few letters, he was getting really close to what he was searching for.", // Adjust if prompt text is needed
+        "prompt_text" => $transcript, // Use the transcript from mapping
         "prompt_lang" => $lang, // Adjust if different
         "text_split_method" => "cut5", // Adjust based on your needs
         "batch_size" => 1,
@@ -167,7 +182,7 @@ function tts($textString, $mood, $stringforhash) {
 
     if ($response === FALSE) {
         // Handle error
-        error_log("Error occurred during TTS request." . __FILE__);
+        error_log("Error occurred during TTS request for voiceid '$voice'.");
         return false;
     }
 
