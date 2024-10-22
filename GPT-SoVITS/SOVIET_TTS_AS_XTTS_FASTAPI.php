@@ -76,31 +76,30 @@ function send_get_request($url, $params) {
     return json_decode($result, true);
 }
 
-// Load voiceid to transcript mapping
-$mappingFile = '/home/dwemer/speakers-GPT-SoVITS/voiceid_to_transcript.json'; // **Update this path to your JSON file**
-if (!file_exists($mappingFile)) {
-    die("Mapping file not found at '$mappingFile'. Please check the path.");
-}
-$voiceidToTranscript = json_decode(file_get_contents($mappingFile), true);
-if (json_last_error() !== JSON_ERROR_NONE) {
-    die("Error decoding JSON mapping: " . json_last_error_msg());
-}
-
 function tts($textString, $mood, $stringforhash) {
-    global $voiceidToTranscript; // Access the global mapping
 
     echo "Starting TTS function..." . PHP_EOL;
+    // Load voiceid to transcript mapping
+    $mappingFile = '/home/dwemer/speakers-GPT-SoVITS/voiceid_to_transcript.json'; // **Update this path to your JSON file**
+    if (!file_exists($mappingFile)) {
+	die("Mapping file not found at '$mappingFile'. Please check the path.");
+    }
+    $voiceidToTranscript = json_decode(file_get_contents($mappingFile), true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+	die("Error decoding JSON mapping: " . json_last_error_msg());
+    }
+
     // Define server URL and paths (These should be configured as per your setup)
     $server_url = 'http://127.0.0.1:9880'; // Update if different
     $gpt_weights_path = "GPT_SoVITS/pretrained_models/s1bert25hz-2kh-longer-epoch=68e-step=50232.ckpt";
     $sovits_weights_path = "GPT_SoVITS/pretrained_models/s2G488k.pth";
 
-    // Step 1: Set Weights (This should ideally be done once, not per TTS call)
-    // To minimize changes, we're including it here. For optimization, consider setting weights during initialization.
-    if (!set_weights($server_url, $gpt_weights_path, $sovits_weights_path)) {
-        error_log("Failed to set weights.");
-        return false;
-    }
+//    // Step 1: Set Weights (This should ideally be done once, not per TTS call)
+//    // To minimize changes, we're including it here. For optimization, consider setting weights during initialization.
+//    if (!set_weights($server_url, $gpt_weights_path, $sovits_weights_path)) {
+//        error_log("Failed to set weights.");
+//        return false;
+//    }
 
     // Optional: Wait for weights to load if necessary
     //sleep(1); // Adjust based on server's loading time
@@ -155,7 +154,7 @@ function tts($textString, $mood, $stringforhash) {
         "prompt_text" => $transcript, // Use the transcript from mapping
         "prompt_lang" => $lang, // Adjust if different
         "text_split_method" => "cut5", // Adjust based on your needs
-        "batch_size" => 1,
+        "batch_size" => 24,
         "media_type" => "wav",
         "streaming_mode" => false,
         "parallel_infer" => true,
