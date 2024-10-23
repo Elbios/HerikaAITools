@@ -61,7 +61,7 @@ bash install.sh
 echo "HERIKA: Downloading and extracting pretrained models..."
 PRETRAINED_MODELS_DIR="$HOME_DIR/GPT-SoVITS/GPT_SoVITS/pretrained_models"
 
-if [ ! -d "$PRETRAINED_MODELS_DIR" ] || [ -z "$(ls -A "$PRETRAINED_MODELS_DIR")" ]; then
+if [ ! -f "$PRETRAINED_MODELS_DIR/s2G488k.pth" ]; then
     echo "Pretrained models not found. Downloading and extracting..."
     cd "$HOME_DIR"
     wget -nc https://huggingface.co/lj1995/GPT-SoVITS-windows-package/resolve/main/GPT-SoVITS-v2-240821.7z -O GPT-SoVITS-v2-240821.7z
