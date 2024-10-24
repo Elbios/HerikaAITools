@@ -67,7 +67,8 @@ if [ ! -f "$PRETRAINED_MODELS_DIR/s2G488k.pth" ]; then
     wget -nc https://huggingface.co/lj1995/GPT-SoVITS-windows-package/resolve/main/GPT-SoVITS-v2-240821.7z -O GPT-SoVITS-v2-240821.7z
     if [ -f GPT-SoVITS-v2-240821.7z ]; then
         7z x GPT-SoVITS-v2-240821.7z GPT-SoVITS-v2-240821/GPT_SoVITS/pretrained_models/
-        mv GPT-SoVITS-v2-240821/GPT_SoVITS/pretrained_models "$HOME_DIR/GPT-SoVITS/GPT_SoVITS/"
+        # Move contents of extracted directory
+        mv GPT-SoVITS-v2-240821/GPT_SoVITS/pretrained_models/* "$PRETRAINED_MODELS_DIR/"
         rm -rf GPT-SoVITS-v2-240821.7z GPT-SoVITS-v2-240821
     else
         echo "ERROR: Pretrained models archive not found after download."
