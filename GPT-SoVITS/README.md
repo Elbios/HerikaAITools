@@ -1,24 +1,25 @@
 # Quick Guide
 
-1. **Download and Install**  
-   - Download the `.BAT` install script and run it. Ensure it completes successfully and that you have sufficient disk space, as this may take a while.  
-   - [Installation Script](https://github.com/Elbios/HerikaAITools/tree/main/GPT-SoVITS)
+1. **Install script**  
+   - Download the `.BAT` install script and run it. Ensure it completes successfully and that you have sufficient disk space, as this may take a while.
+   - [Installation Script](https://github.com/Elbios/HerikaAITools/blob/main/GPT-SoVITS/install_gpt_sovits_tts.bat)
 
-2. **Download and Run Script**  
-   - Download the run script and execute it.  
-   - [Run Script](https://github.com/Elbios/HerikaAITools/tree/main/GPT-SoVITS)
+2. **Run Script**  
+   - Download the run script and execute it (keep it open - it runs the TTS server).  
+   - [Run Script](https://github.com/Elbios/HerikaAITools/blob/main/GPT-SoVITS/run_gpt_sovits_tts.bat)
 
 3. **Update TTS File**  
    - Download `SOVIET_TTS_AS_XTTS_FASTAPI.php` and replace the file located at:
      ```
      \\wsl.localhost\DwemerAI4Skyrim3\var\www\html\HerikaServer\tts\tts-xtts-fastapi.php
      ```
+   - Keep the file name `tts-xtts-fastapi.php`
 
 4. **Configure Dwemer TTS Settings**  
    - Set the TTS configuration page to use `xtts fastapi`.
 
 5. **Prepare Dependencies**  
-   - Place all 400 `.wav` files in the following folder:
+   - Place all 402 `.wav` files in the following folder (create it first):
      ```
      \\wsl.localhost\DwemerAI4Skyrim3\home\dwemer\speakers-GPT-SoVITS
      ```
