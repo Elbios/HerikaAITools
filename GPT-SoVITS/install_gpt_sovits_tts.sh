@@ -93,4 +93,11 @@ fi
 echo "HERIKA: Downloading NLTK data..."
 python -c "import nltk; nltk.download('averaged_perceptron_tagger_eng')"
 
+# Check and move NLTK data if needed
+if [ -d "$HOME_DIR/nltk_data" ]; then
+    echo "HERIKA: Moving NLTK data to Conda environment..."
+    mv "$HOME_DIR/nltk_data" "$HOME_DIR/miniconda3/envs/GPTSoVits/"
+    echo "HERIKA: NLTK data moved successfully."
+fi
+
 echo "HERIKA: Installation completed successfully!"

@@ -76,7 +76,7 @@ function send_get_request($url, $params) {
     return json_decode($result, true);
 }
 
-function tts($textString, $mood, $stringforhash) {
+$GLOBALS["TTS_IN_USE"]=function($textString, $mood, $stringforhash) {
 
     echo "Starting TTS function..." . PHP_EOL;
     // Load voiceid to transcript mapping
@@ -203,7 +203,7 @@ function tts($textString, $mood, $stringforhash) {
     $GLOBALS["DEBUG_DATA"][] = (microtime(true) - $startTime) . " secs in xtts-fast-api call";
 
     return "soundcache/" . md5(trim($stringforhash)) . ".wav";
-}
+};
 
 /*
 Example Usage:
