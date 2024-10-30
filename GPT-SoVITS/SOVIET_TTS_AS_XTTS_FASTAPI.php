@@ -118,6 +118,8 @@ $GLOBALS["TTS_IN_USE"]=function($textString, $mood, $stringforhash) {
     if (empty($voice)) {
         $voice = isset($GLOBALS["TTS"]["XTTSFASTAPI"]["voiceid"]) ? $GLOBALS["TTS"]["XTTSFASTAPI"]["voiceid"] : '';
     }
+    if (isset($GLOBALS["PATCH_OVERRIDE_VOICE"]))
+	$voice=$GLOBALS["PATCH_OVERRIDE_VOICE"];
 
     if (empty($voice)) {
         error_log("Voice ID is not set in globals.");
